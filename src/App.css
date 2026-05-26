@@ -1,0 +1,299 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri&family=Aref+Ruqaa&family=Cairo:wght@400;700&family=Tajawal:wght@500;700&family=IBM+Plex+Sans+Arabic:wght@500;700&family=Almarai:wght@700&display=swap');
+
+/* Force all elements to inherit the user-selected font */
+.app-wrapper, 
+.app-wrapper * {
+  font-family: var(--widget-font) !important;
+}
+
+:root {
+  --primary-color: #ff3b30;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+  border: none;
+  box-shadow: none !important;
+}
+
+body, html {
+  background: transparent !important;
+  font-family: 'Cairo', sans-serif;
+  color: #ffffff;
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.app-wrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+}
+
+.scalable-content {
+  width: 100%;
+  max-width: 580px;
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.glass-widget {
+  background: rgba(30, 30, 30, 0.45);
+  border-radius: 24px;
+  /* Subtle drop shadow specific to the widget container */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25) !important;
+  backdrop-filter: blur(25px) saturate(200%);
+  -webkit-backdrop-filter: blur(25px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  margin-bottom: 20px;
+}
+
+/* Visual feedback during window dragging */
+.glass-widget:active {
+  cursor: grabbing !important;
+}
+
+.theme-text {
+  color: var(--primary-color);
+  text-shadow: 0px 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.settings-panel {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 15px;
+  border-radius: 15px;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 100;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.5) !important;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.settings-panel input[type="color"] {
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent;
+}
+
+.settings-panel input[type="range"] {
+  cursor: pointer;
+  accent-color: var(--primary-color);
+}
+
+.prayers-widget {
+  display: flex;
+  justify-content: space-between;
+  padding: 18px 25px;
+}
+
+.prayer-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 60px;
+}
+
+.prayer-item .name {
+  font-family: 'Aref Ruqaa', serif;
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.prayer-item .time {
+  font-size: 1.15rem;
+  letter-spacing: 0.5px;
+}
+
+.main-clock-widget {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 30px;
+}
+
+.date-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.weekday {
+  font-family: 'Aref Ruqaa', serif;
+  font-size: 2.8rem;
+  line-height: 1;
+}
+
+.hijri {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.gregorian {
+  font-size: 1.1rem;
+  color: #c7c7cc;
+}
+
+.time-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.current-clock {
+  font-size: 3.5rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.next-prayer-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 6px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+.next-prayer-label {
+  font-family: 'Aref Ruqaa', serif;
+  font-size: 1.4rem;
+  color: var(--primary-color);
+}
+
+.countdown {
+  font-size: 1.3rem;
+  letter-spacing: 1px;
+}
+
+.loading {
+  text-align: center;
+  color: #c7c7cc;
+}
+
+.apple-popup {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  color: white;
+  z-index: 1000;
+  text-align: center;
+  /* Smooth macOS-style slide-up animation */
+  animation: popupSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+}
+
+@keyframes popupSlideUp {
+  0% { 
+    opacity: 0; 
+    transform: scale(0.9) translateY(40px); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: scale(1) translateY(0); 
+  }
+}
+
+.mute-btn {
+  margin-top: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 10px;
+  padding: 5px 10px;
+  color: white;
+  cursor: pointer;
+}
+
+.modal-overlay {
+  position: fixed; 
+  inset: 0; 
+  background: rgba(0, 0, 0, 0.4);
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  z-index: 2000;
+  backdrop-filter: blur(8px);
+}
+
+/* Glassmorphism settings modal */
+.glass-modal {
+  background: rgba(255, 255, 255, 0.15); 
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px; 
+  padding: 25px; 
+  width: 85%; 
+  max-width: 350px;
+  color: white; 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalPop { 
+  from { transform: scale(0.9); opacity: 0; } 
+  to { transform: scale(1); opacity: 1; } 
+}
+
+/* Settings form groups */
+.setting-group { margin-bottom: 20px; text-align: right; }
+.setting-group label { display: block; margin-bottom: 8px; font-size: 0.95rem; opacity: 0.9; }
+.setting-group select {
+  width: 100%; 
+  padding: 10px; 
+  border-radius: 10px; 
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.2); 
+  color: white; 
+  outline: none;
+  font-family: inherit;
+}
+.setting-group select option { background: #222; color: white; }
+.color-picker-input {
+  width: 100%; height: 40px; border: none; border-radius: 10px; cursor: pointer;
+  background: transparent;
+}
+
+/* Digit-specific styling for better readability and alignment */
+.apple-numbers {
+  font-family: 'Almarai', sans-serif !important; 
+  letter-spacing: 1px !important;
+  font-weight: 700;
+}
