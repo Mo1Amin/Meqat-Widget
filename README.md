@@ -2,6 +2,16 @@
 
 A beautifully designed, Glassmorphism-inspired Islamic prayer times widget for Windows. Designed to sit elegantly on your desktop without cluttering your workspace, providing accurate prayer times, offline support, and complete UI customization.
 
+<p align="center">
+  <a href="https://github.com/Mo1Amin/Meqat-Widget/releases/latest"><img src="https://img.shields.io/github/v/release/Mo1Amin/Meqat-Widget?style=for-the-badge&label=Download&color=0f766e" alt="Download the latest release"></a>
+  <img src="https://img.shields.io/badge/Tauri-24C8DB?style=for-the-badge&logo=tauri&logoColor=white" alt="Tauri">
+  <img src="https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white" alt="Rust">
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React">
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
+</p>
+
+<img src="docs/preview.webp" alt="Meqat widget on a Windows desktop: today's prayer times, the Hijri and Gregorian date, and a countdown to the next prayer" width="100%">
+
 ## ✨ Features
 
 * **Glassmorphism UI:** Modern, translucent, and sleek Apple-like aesthetic that blends with any desktop wallpaper.
