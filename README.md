@@ -10,7 +10,7 @@ A beautifully designed, Glassmorphism-inspired Islamic prayer times widget for W
   <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
 </p>
 
-<img src="docs/preview.webp" alt="Meqat widget on a Windows desktop: today's prayer times, the Hijri and Gregorian date, and a countdown to the next prayer" width="100%">
+<img src="docs/preview.webp" alt="Meqat 1.3 on a Windows desktop: the date in Hijri and Gregorian, the clock, a countdown to Asr, and the six prayer times with Asr highlighted as next" width="100%">
 
 ## ✨ Features
 
