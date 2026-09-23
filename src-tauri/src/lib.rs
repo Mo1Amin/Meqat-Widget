@@ -37,8 +37,8 @@ fn open_settings_window(app: &AppHandle) -> Result<(), String> {
         .title("إعدادات مِيقَات")
         // Matches --bg in settings.css so the window never flashes white.
         .background_color(Color(27, 28, 31, 255))
-        .inner_size(460.0, 680.0)
-        .min_inner_size(420.0, 520.0)
+        .inner_size(500.0, 720.0)
+        .min_inner_size(440.0, 520.0)
         .resizable(true)
         .maximizable(false)
         .theme(Some(Theme::Dark))
@@ -49,6 +49,67 @@ fn open_settings_window(app: &AppHandle) -> Result<(), String> {
         .map_err(|e| e.to_string())
 }
 
+/// The optional desktop widgets, each its own transparent window.
+const EXTRA_WIDGETS: [&str; 2] = ["azkar", "ayah"];
+
+/// Opens an extra widget. It starts hidden and shows itself once its content
+/// has been measured, like the main widget, so it never flashes at the wrong size.
+#[tauri::command]
+async fn open_widget(app: AppHandle, label: String) -> Result<(), String> {
+    if !EXTRA_WIDGETS.contains(&label.as_str()) {
+        return Err(format!("unknown widget {label}"));
+    }
+    if app.get_webview_window(&label).is_some() {
+        return Ok(());
+    }
+    let mut builder = WebviewWindowBuilder::new(&app, &label, WebviewUrl::App("index.html".into()))
+        .title("مِيقَات")
+        .inner_size(420.0, 200.0)
+        .transparent(true)
+        .decorations(false)
+        .shadow(false)
+        .skip_taskbar(true)
+        .resizable(false)
+        .maximizable(false)
+        .visible(false)
+        .focused(false);
+    // First time only: start just under the prayer widget instead of on top of
+    // it. A remembered position is restored over this by the window-state plugin.
+    if let Some(main) = app.get_webview_window(MAIN) {
+        if let (Ok(pos), Ok(size), Ok(scale)) = (main.outer_position(), main.outer_size(), main.scale_factor()) {
+            let offset = if label == "azkar" { 16.0 } else { 236.0 };
+            builder = builder.position(pos.x as f64 / scale, (pos.y + size.height as i32) as f64 / scale + offset);
+        }
+    }
+    builder.build().map(|_| ()).map_err(|e| e.to_string())
+}
+
+/// Shows a widget without activating it. A plain `show()` takes the focus, so a
+/// widget opened from the settings window swallowed the next click there, and
+/// the widget appearing at login pulled focus from whatever the user was doing.
+#[tauri::command]
+fn reveal_widget(window: tauri::WebviewWindow) {
+    #[cfg(windows)]
+    {
+        use windows_sys::Win32::UI::WindowsAndMessaging::{ShowWindow, SW_SHOWNOACTIVATE};
+        if let Ok(hwnd) = window.hwnd() {
+            // SAFETY: the handle belongs to a live window owned by this process.
+            unsafe { ShowWindow(hwnd.0 as _, SW_SHOWNOACTIVATE) };
+            return;
+        }
+    }
+    let _ = window.show();
+}
+
+#[tauri::command]
+fn close_widget(app: AppHandle, label: String) {
+    if EXTRA_WIDGETS.contains(&label.as_str()) {
+        if let Some(window) = app.get_webview_window(&label) {
+            let _ = window.close();
+        }
+    }
+}
+
 fn show_main(app: &AppHandle) {
     if let Some(window) = app.get_webview_window(MAIN) {
         let _ = window.show();
@@ -56,14 +117,17 @@ fn show_main(app: &AppHandle) {
     }
 }
 
+/// Shows or hides every widget together, following the prayer widget.
 fn toggle_main(app: &AppHandle) {
-    if let Some(window) = app.get_webview_window(MAIN) {
-        if window.is_visible().unwrap_or(false) {
-            let _ = window.hide();
-        } else {
-            let _ = window.show();
-            let _ = window.set_focus();
+    let Some(main) = app.get_webview_window(MAIN) else { return };
+    let show = !main.is_visible().unwrap_or(false);
+    for label in std::iter::once(MAIN).chain(EXTRA_WIDGETS) {
+        if let Some(window) = app.get_webview_window(label) {
+            let _ = if show { window.show() } else { window.hide() };
         }
+    }
+    if show {
+        let _ = main.set_focus();
     }
 }
 
@@ -92,7 +156,7 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
-            let show_i = MenuItem::with_id(app, "toggle", "إظهار / إخفاء", true, None::<&str>)?;
+            let show_i = MenuItem::with_id(app, "toggle", "إظهار / إخفاء الويدجتس", true, None::<&str>)?;
             let settings_i = MenuItem::with_id(app, "settings", "الإعدادات…", true, None::<&str>)?;
             let center_i = MenuItem::with_id(app, "center", "إعادة الويدجت للمنتصف", true, None::<&str>)?;
             let quit_i = MenuItem::with_id(app, "quit", "إغلاق مِيقَات", true, None::<&str>)?;
@@ -132,7 +196,7 @@ pub fn run() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![drag_window, open_settings])
+        .invoke_handler(tauri::generate_handler![drag_window, open_settings, open_widget, close_widget, reveal_widget])
         .on_window_event(|window, event| {
             // Closing the widget hides it to the tray; the settings window
             // closes normally.

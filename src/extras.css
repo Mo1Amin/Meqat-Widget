@@ -1,0 +1,115 @@
+/* Adhkar and Qur'an widgets. They reuse .stage/.card from widget.css; the
+   card has a fixed width (in em, so it scales) and grows downward with the
+   text, and the native window follows. */
+
+.extra-card {
+  width: calc(var(--card-width, 24) * 1em);
+  gap: 0.75em;
+  padding: 1em 1.2em 0.85em;
+}
+
+.x-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1em;
+}
+
+.x-title {
+  font-weight: 700;
+  font-size: 0.95em;
+  color: var(--accent);
+}
+
+.x-pos {
+  font-size: 0.75em;
+  color: var(--text-3);
+}
+
+.x-text {
+  margin: 0;
+  font-size: 1.12em;
+  line-height: 1.9;
+  text-align: justify;
+  text-wrap: pretty;
+}
+
+/* Qur'anic text is always set in the mushaf face, whatever the app font. */
+.x-text.is-quran {
+  font-family: "Amiri Quran", "Amiri", serif;
+  font-size: 1.28em;
+  line-height: 2.15;
+}
+
+.ayah-text {
+  text-align: center;
+  text-align-last: center;
+}
+
+.ayah-no {
+  color: var(--accent);
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+.x-note {
+  margin: -0.2em 0 0;
+  font-size: 0.8em;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+
+.x-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6em;
+  min-height: 1.9em;
+}
+
+.x-ref {
+  font-size: 0.82em;
+  color: var(--text-2);
+}
+
+.x-nav {
+  display: flex;
+  gap: 0.3em;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.extra-card:hover .x-nav {
+  opacity: 1;
+}
+
+.counter {
+  padding: 0.25em 0.85em;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: #fff;
+  font: inherit;
+  font-size: 0.82em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.counter:hover {
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+.counter:active {
+  transform: scale(0.96);
+}
+
+/* A short tasbih («سبحان الله») reads better large and centred. */
+.x-text.is-short {
+  padding: 0.2em 0;
+  font-size: 1.55em;
+  font-weight: 700;
+  line-height: 1.6;
+  text-align: center;
+  text-align-last: center;
+}

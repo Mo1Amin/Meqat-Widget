@@ -382,3 +382,221 @@ input[type="range"] {
 .link-btn:hover {
   color: var(--text);
 }
+
+/* ------------------------------------------------------------ tabs */
+
+.settings-head {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  margin: -22px -20px 16px;
+  padding: 18px 20px 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+
+.settings-head h1 {
+  margin-bottom: 10px;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs button {
+  flex: none;
+  padding: 7px 12px 9px;
+  font: inherit;
+  font-size: 0.92rem;
+  color: var(--text-2);
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+
+.tabs button:hover {
+  color: var(--text);
+}
+
+.tabs button.is-on {
+  color: var(--text);
+  font-weight: 700;
+  border-bottom-color: var(--accent);
+}
+
+.tab-intro {
+  margin: 0 4px 14px;
+  color: var(--text-2);
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+.section h2 small {
+  display: block;
+  margin-top: 2px;
+  font-weight: 400;
+  color: var(--text-3);
+}
+
+/* ------------------------------------------------------------ widget gallery */
+
+.widget-card {
+  margin-bottom: 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.widget-card.is-on {
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.widget-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+}
+
+.widget-glyph {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--accent);
+  font-family: "Amiri", serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.widget-card-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.45;
+}
+
+.widget-card-text small {
+  color: var(--text-2);
+  font-size: 0.8rem;
+}
+
+.add-btn {
+  flex: none;
+  min-width: 70px;
+  padding: 6px 14px;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--accent-ink);
+  background: var(--accent);
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.add-btn.is-on {
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  font-weight: 600;
+}
+
+.widget-card-body {
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+/* ------------------------------------------------------------ voices */
+
+.voices {
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+}
+
+.voices li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 8px;
+}
+
+.voices li.is-on {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.voice-pick {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  padding: 9px 10px;
+  font: inherit;
+  text-align: right;
+  color: var(--text);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.voice-pick small {
+  color: var(--text-3);
+  font-size: 0.78rem;
+}
+
+.radio-dot {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 2px var(--text-3);
+}
+
+.voices li.is-on .radio-dot {
+  box-shadow: inset 0 0 0 5px var(--accent);
+}
+
+.voices li.is-on .voice-name {
+  font-weight: 700;
+}
+
+.icon-btn-s {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  margin-inline-end: 6px;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.icon-btn-s svg {
+  width: 11px;
+  height: 11px;
+}
+
+.credits {
+  margin: 0;
+  padding: 12px 14px;
+  color: var(--text-2);
+  font-size: 0.84rem;
+  line-height: 1.8;
+}

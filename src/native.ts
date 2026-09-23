@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { emit, listen } from "@tauri-apps/api/event";
 import { getCurrentWindow, LogicalPosition, PhysicalSize, availableMonitors } from "@tauri-apps/api/window";
 import { isPermissionGranted, requestPermission, sendNotification } from "@tauri-apps/plugin-notification";
 import { disable, enable, isEnabled } from "@tauri-apps/plugin-autostart";
@@ -20,9 +21,41 @@ async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
 }
 
 export const startDrag = () => safe(() => invoke("drag_window"), undefined);
-export const openSettings = () => safe(() => invoke("open_settings"), undefined);
+const SETTINGS_TAB_KEY = "miqat.settingsTab";
+const SETTINGS_TAB_EVENT = "miqat://settings-tab";
+
+/**
+ * Opens settings on a given tab. The tab is left in storage for a window that
+ * is still loading, and announced for one that is already open.
+ */
+export const openSettings = (tab?: string) =>
+  safe(async () => {
+    if (tab) localStorage.setItem(SETTINGS_TAB_KEY, tab);
+    await invoke("open_settings");
+    if (tab) await emit(SETTINGS_TAB_EVENT, tab);
+  }, undefined);
+
+export function takeRequestedTab(): string | null {
+  const tab = localStorage.getItem(SETTINGS_TAB_KEY);
+  localStorage.removeItem(SETTINGS_TAB_KEY);
+  return tab;
+}
+
+export function onTabRequested(handler: (tab: string) => void): () => void {
+  if (!isTauri) return () => {};
+  const off = listen<string>(SETTINGS_TAB_EVENT, (e) => {
+    localStorage.removeItem(SETTINGS_TAB_KEY);
+    handler(e.payload);
+  });
+  return () => void off.then((fn) => fn());
+}
+
+/** Opens or closes one of the extra widget windows ("azkar", "ayah"). */
+export const setWidgetWindow = (label: string, open: boolean) =>
+  safe(() => invoke(open ? "open_widget" : "close_widget", { label }), undefined);
 export const setAlwaysOnTop = (on: boolean) => safe(() => getCurrentWindow().setAlwaysOnTop(on), undefined);
-export const showWindow = () => safe(() => getCurrentWindow().show(), undefined);
+/** Shows this widget without stealing the focus (see reveal_widget in lib.rs). */
+export const showWindow = () => safe(() => invoke("reveal_widget"), undefined);
 export const closeWindow = () => safe(() => getCurrentWindow().close(), undefined);
 /**
  * Sizes the window to a box measured in CSS pixels. The conversion goes

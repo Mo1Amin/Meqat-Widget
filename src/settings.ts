@@ -12,6 +12,30 @@ export interface Place {
   longitude: number;
 }
 
+export type AzkarMode = "auto" | "morning" | "evening" | "afterPrayer" | "sleep" | "waking" | "tasbih";
+export type AyahSource = "curated" | "all" | "sequential";
+
+/** Shared by every extra desktop widget. */
+interface WidgetLook {
+  enabled: boolean;
+  /** Seconds between items; 0 means only on demand. */
+  interval: number;
+  scale: number;
+  /** Card width in em, so it scales with the widget. */
+  width: number;
+  opacity: number;
+}
+
+export interface AzkarWidget extends WidgetLook {
+  mode: AzkarMode;
+  showNote: boolean;
+}
+
+export interface AyahWidget extends WidgetLook {
+  source: AyahSource;
+  showRef: boolean;
+}
+
 export interface Settings {
   // Location & calculation
   place: Place;
@@ -28,6 +52,9 @@ export interface Settings {
   showSeconds: boolean;
   scale: number;
   opacity: number;
+  /** Multipliers for the weekday name and the two date lines under it. */
+  weekdaySize: number;
+  dateSize: number;
 
   // Behaviour
   alwaysOnTop: boolean;
@@ -35,9 +62,16 @@ export interface Settings {
 
   // Alerts
   azanEnabled: boolean;
+  azanVoice: string;
+  /** A voice id, or "same" to use azanVoice for Fajr too. */
+  fajrVoice: string;
   volume: number;
   notify: boolean;
   reminderMinutes: number;
+
+  // Extra widgets
+  azkar: AzkarWidget;
+  ayah: AyahWidget;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -54,14 +88,21 @@ export const DEFAULT_SETTINGS: Settings = {
   showSeconds: false,
   scale: 1,
   opacity: 0.5,
+  weekdaySize: 1,
+  dateSize: 1,
 
   alwaysOnTop: false,
   lockPosition: false,
 
   azanEnabled: true,
+  azanVoice: "classic",
+  fajrVoice: "fajr-abdulbasit",
   volume: 0.8,
   notify: true,
   reminderMinutes: 10,
+
+  azkar: { enabled: false, mode: "auto", interval: 30, scale: 1, width: 24, opacity: 0.5, showNote: true },
+  ayah: { enabled: false, source: "curated", interval: 300, scale: 1, width: 26, opacity: 0.5, showRef: true },
 };
 
 export const FONTS: Record<string, { label: string; family: string }> = {
@@ -110,14 +151,24 @@ function migrateLegacy(): Partial<Settings> {
   return out;
 }
 
+/** Fills in anything a settings object from an older version is missing. */
+function withDefaults(partial: Partial<Settings>): Settings {
+  return {
+    ...DEFAULT_SETTINGS,
+    ...partial,
+    azkar: { ...DEFAULT_SETTINGS.azkar, ...partial.azkar },
+    ayah: { ...DEFAULT_SETTINGS.ayah, ...partial.ayah },
+  };
+}
+
 export function loadSettings(): Settings {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+    if (raw) return withDefaults(JSON.parse(raw));
   } catch {
     /* fall through to defaults */
   }
-  return { ...DEFAULT_SETTINGS, ...migrateLegacy() };
+  return withDefaults(migrateLegacy());
 }
 
 /** Persists settings and tells every other window about the change. */
@@ -128,7 +179,7 @@ export async function saveSettings(settings: Settings): Promise<void> {
 
 export function onSettingsChanged(handler: (s: Settings) => void): () => void {
   if (isTauri) {
-    const off = listen<Settings>(CHANGED_EVENT, (e) => handler({ ...DEFAULT_SETTINGS, ...e.payload }));
+    const off = listen<Settings>(CHANGED_EVENT, (e) => handler(withDefaults(e.payload)));
     return () => void off.then((fn) => fn());
   }
   // Browser preview: two tabs talk through the storage event instead.

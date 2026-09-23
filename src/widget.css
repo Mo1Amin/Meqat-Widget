@@ -81,20 +81,20 @@ html[data-view="widget"] * {
 }
 
 .weekday {
-  font-size: 2.05em;
+  font-size: calc(2.05em * var(--weekday-size, 1));
   font-weight: 700;
   line-height: 1.1;
   color: var(--accent);
 }
 
 .hijri {
-  font-size: 1.02em;
+  font-size: calc(1.02em * var(--date-size, 1));
   font-weight: 600;
   font-family: inherit;
 }
 
 .greg {
-  font-size: 0.88em;
+  font-size: calc(0.88em * var(--date-size, 1));
   font-weight: 400;
   font-family: inherit;
   color: var(--text-2);

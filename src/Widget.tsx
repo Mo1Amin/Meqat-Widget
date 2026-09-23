@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   buildSchedule,
   dayKey,
@@ -11,11 +11,12 @@ import {
   type ScheduledPrayer,
 } from "./prayer";
 import { fontFamily, loadSettings, onSettingsChanged, saveSettings, type Settings } from "./settings";
-import { ensureOnScreen, notify, openSettings, resizeWindow, setAlwaysOnTop, showWindow, startDrag } from "./native";
+import { notify, openSettings, setWidgetWindow } from "./native";
+import { useDesktopWidget } from "./useDesktopWidget";
+import { azanSrcFor } from "./voices";
 import { BellIcon, BellOffIcon, GearIcon, StopIcon } from "./icons";
 import "./widget.css";
 
-const AZAN_SRC = "/azan.mp3";
 const RETRY_MS = 5 * 60_000;
 
 export default function Widget() {
@@ -93,8 +94,9 @@ export default function Widget() {
     setCalling(p.name);
     if (s.notify) notify("مِيقَات", `حان الآن موعد أذان ${p.name}`);
     if (s.azanEnabled) {
-      audioRef.current ??= new Audio(AZAN_SRC);
+      audioRef.current ??= new Audio();
       const audio = audioRef.current;
+      audio.src = azanSrcFor(p.key, s.azanVoice, s.fajrVoice);
       audio.volume = s.volume;
       audio.currentTime = 0;
       audio.onended = () => setCalling(null);
@@ -137,63 +139,23 @@ export default function Widget() {
 
   // ---------------------------------------------------------------- window
 
+  const { onMouseDown, onContextMenu } = useDesktopWidget(stageRef, {
+    alwaysOnTop: settings.alwaysOnTop,
+    lockPosition: settings.lockPosition,
+    settingsTab: "look",
+  });
+
+  // The extra widgets are separate windows; the prayer widget owns their
+  // lifetime so they open with the app and follow the settings. They wait
+  // until this widget has its real size, because a first-time widget is
+  // placed just below it.
+  const settled = !!schedule || failed;
   useEffect(() => {
-    setAlwaysOnTop(settings.alwaysOnTop);
-  }, [settings.alwaysOnTop]);
-
-  // The native window is always exactly the size of the card (plus room for
-  // its shadow), so there is never an invisible margin swallowing clicks on
-  // the desktop and nothing is ever clipped at larger sizes.
-  //
-  // Measured after every commit, not only from a ResizeObserver: WebView2
-  // pauses rendering while the window is hidden, and observers are delivered
-  // in the rendering step, so the loading → loaded change was never reported
-  // and the window stayed at the size of the loading message.
-  const fitRef = useRef({ last: "", shown: false, fontsReady: false });
-  const fit = () => {
-    const stage = stageRef.current;
-    const state = fitRef.current;
-    if (!stage || !state.fontsReady) return;
-    const r = stage.getBoundingClientRect();
-    const key = `${Math.ceil(r.width)}x${Math.ceil(r.height)}x${window.devicePixelRatio}`;
-    if (key === state.last || r.width === 0 || r.height === 0) return;
-    state.last = key;
-    void resizeWindow(r.width, r.height).then(async () => {
-      if (state.shown) return;
-      state.shown = true;
-      await ensureOnScreen();
-      await showWindow();
-    });
-  };
-  useLayoutEffect(fit);
+    if (settled) setWidgetWindow("azkar", settings.azkar.enabled);
+  }, [settings.azkar.enabled, settled]);
   useEffect(() => {
-    const stage = stageRef.current;
-    if (!stage) return;
-    const ro = new ResizeObserver(fit);
-    document.fonts.ready.then(() => {
-      fitRef.current.fontsReady = true;
-      ro.observe(stage);
-      fit();
-    });
-    // Moving to a monitor with a different scale changes devicePixelRatio.
-    window.addEventListener("resize", fit);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", fit);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const onMouseDown = (e: React.MouseEvent) => {
-    if (e.button !== 0 || settings.lockPosition) return;
-    if ((e.target as HTMLElement).closest("button")) return;
-    startDrag();
-  };
-
-  const onContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault();
-    openSettings();
-  };
+    if (settled) setWidgetWindow("ayah", settings.ayah.enabled);
+  }, [settings.ayah.enabled, settled]);
 
   const toggleAzan = () => {
     const next = { ...settings, azanEnabled: !settings.azanEnabled };
@@ -216,6 +178,8 @@ export default function Widget() {
     "--accent": settings.accent,
     "--tint": settings.opacity,
     "--scale": settings.scale,
+    "--weekday-size": settings.weekdaySize,
+    "--date-size": settings.dateSize,
     fontFamily: fontFamily(settings.font),
   } as React.CSSProperties;
 
@@ -340,7 +304,7 @@ export default function Widget() {
           <button className="icon-btn" onClick={toggleAzan} title={settings.azanEnabled ? "كتم الأذان" : "تشغيل الأذان"}>
             {settings.azanEnabled ? <BellIcon /> : <BellOffIcon />}
           </button>
-          <button className="icon-btn" onClick={() => openSettings()} title="الإعدادات">
+          <button className="icon-btn" onClick={() => openSettings("widgets")} title="الإعدادات">
             <GearIcon />
           </button>
         </div>

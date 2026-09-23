@@ -52,3 +52,28 @@ export const PinIcon = () => (
     <circle cx="12" cy="9.5" r="2.5" />
   </svg>
 );
+
+export const ChevronPrevIcon = () => (
+  <svg {...base}>
+    <path d="M9 6l6 6-6 6" />
+  </svg>
+);
+
+export const ChevronNextIcon = () => (
+  <svg {...base}>
+    <path d="M15 6l-6 6 6 6" />
+  </svg>
+);
+
+export const CopyIcon = () => (
+  <svg {...base}>
+    <rect x="9" y="9" width="11" height="11" rx="2" />
+    <path d="M5 15V6a2 2 0 0 1 2-2h9" />
+  </svg>
+);
+
+export const CheckIcon = () => (
+  <svg {...base}>
+    <path d="M5 12.5l4.5 4.5L19 7.5" />
+  </svg>
+);

@@ -10,9 +10,12 @@ import "@fontsource/amiri/400.css";
 import "@fontsource/amiri/700.css";
 import "@fontsource/aref-ruqaa/400.css";
 import "@fontsource/aref-ruqaa/700.css";
+import "@fontsource/amiri-quran/400.css";
 import { isTauri } from "./native";
 import Widget from "./Widget";
 import SettingsWindow from "./SettingsWindow";
+import AzkarWidget from "./AzkarWidget";
+import AyahWidget from "./AyahWidget";
 
 // Both windows load the same page; the window label decides what it shows.
 // Outside Tauri (plain browser preview) `?view=settings` does the same job.
@@ -20,8 +23,17 @@ const view = isTauri
   ? getCurrentWindow().label
   : new URLSearchParams(location.search).get("view") ?? "main";
 
+const VIEWS: Record<string, () => React.ReactElement> = {
+  settings: SettingsWindow,
+  azkar: AzkarWidget,
+  ayah: AyahWidget,
+};
+const View = VIEWS[view] ?? Widget;
+
 document.documentElement.dataset.view = view === "settings" ? "settings" : "widget";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>{view === "settings" ? <SettingsWindow /> : <Widget />}</React.StrictMode>,
+  <React.StrictMode>
+    <View />
+  </React.StrictMode>,
 );
