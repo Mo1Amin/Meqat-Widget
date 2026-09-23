@@ -50,9 +50,36 @@ export function onTabRequested(handler: (tab: string) => void): () => void {
   return () => void off.then((fn) => fn());
 }
 
-/** Opens or closes one of the extra widget windows ("azkar", "ayah"). */
-export const setWidgetWindow = (label: string, open: boolean) =>
-  safe(() => invoke(open ? "open_widget" : "close_widget", { label }), undefined);
+const WIDGET_SHOWN_EVENT = "miqat://widget-shown";
+
+/** Announces that this window has been sized and shown for the first time. */
+export const announceShown = () =>
+  safe(() => emit(WIDGET_SHOWN_EVENT, getCurrentWindow().label), undefined);
+
+/**
+ * Opens an extra widget window ("azkar", "ayah") and, if it was new, waits
+ * until it is on screen at its real size — the next widget is placed under it.
+ */
+export const openWidget = (label: string) =>
+  safe(async () => {
+    let off: (() => void) | undefined;
+    const shown = new Promise<void>((resolve) => {
+      const timer = window.setTimeout(resolve, 4000);
+      listen<string>(WIDGET_SHOWN_EVENT, (e) => {
+        if (e.payload === label) {
+          clearTimeout(timer);
+          resolve();
+        }
+      }).then((fn) => (off = fn));
+    });
+    try {
+      if (await invoke<boolean>("open_widget", { label })) await shown;
+    } finally {
+      off?.();
+    }
+  }, undefined);
+
+export const closeWidget = (label: string) => safe(() => invoke("close_widget", { label }), undefined);
 export const setAlwaysOnTop = (on: boolean) => safe(() => getCurrentWindow().setAlwaysOnTop(on), undefined);
 /** Shows this widget without stealing the focus (see reveal_widget in lib.rs). */
 export const showWindow = () => safe(() => invoke("reveal_widget"), undefined);

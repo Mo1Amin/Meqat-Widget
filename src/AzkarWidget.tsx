@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AZKAR, AZKAR_TITLES, azkarForNow } from "./content";
 import { dayKey, digits, loadTimings, type DayTimings } from "./prayer";
-import { loadSettings, onSettingsChanged, type Settings } from "./settings";
+import { fontFamily, loadSettings, onSettingsChanged, type Settings } from "./settings";
 import { openSettings } from "./native";
 import { useDesktopWidget } from "./useDesktopWidget";
 import { ChevronNextIcon, ChevronPrevIcon, GearIcon } from "./icons";
@@ -81,6 +81,7 @@ export default function AzkarWidget() {
     "--tint": cfg.opacity,
     "--scale": cfg.scale,
     "--card-width": cfg.width,
+    fontFamily: fontFamily(settings.font),
   } as React.CSSProperties;
 
   return (

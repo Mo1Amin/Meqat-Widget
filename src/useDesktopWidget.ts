@@ -1,5 +1,5 @@
-import { useEffect, useLayoutEffect, useRef, type RefObject } from "react";
-import { ensureOnScreen, openSettings, resizeWindow, setAlwaysOnTop, showWindow, startDrag } from "./native";
+import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
+import { announceShown, ensureOnScreen, openSettings, resizeWindow, setAlwaysOnTop, showWindow, startDrag } from "./native";
 
 /**
  * Everything that makes a React tree behave like a desktop widget: the native
@@ -23,6 +23,7 @@ export function useDesktopWidget(
   // in the rendering step, so the loading → loaded change was never reported
   // and the window stayed at the size of the loading message.
   const fitRef = useRef({ last: "", shown: false, fontsReady: false });
+  const [shown, setShown] = useState(false);
   const fit = () => {
     const stage = stageRef.current;
     const state = fitRef.current;
@@ -36,6 +37,8 @@ export function useDesktopWidget(
       state.shown = true;
       await ensureOnScreen();
       await showWindow();
+      setShown(true);
+      await announceShown();
     });
   };
   useLayoutEffect(fit);
@@ -68,5 +71,6 @@ export function useDesktopWidget(
     openSettings(opts.settingsTab);
   };
 
-  return { onMouseDown, onContextMenu };
+  /** True once the window has been sized and shown for the first time. */
+  return { onMouseDown, onContextMenu, shown };
 }

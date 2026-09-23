@@ -9,7 +9,7 @@ import {
   type Passage,
 } from "./content";
 import { digits } from "./prayer";
-import { loadSettings, onSettingsChanged, type Settings } from "./settings";
+import { fontFamily, loadSettings, onSettingsChanged, type Settings } from "./settings";
 import { openSettings } from "./native";
 import { useDesktopWidget } from "./useDesktopWidget";
 import { CheckIcon, ChevronNextIcon, ChevronPrevIcon, CopyIcon, GearIcon } from "./icons";
@@ -70,6 +70,7 @@ export default function AyahWidget() {
     "--tint": cfg.opacity,
     "--scale": cfg.scale,
     "--card-width": cfg.width,
+    fontFamily: fontFamily(settings.font),
   } as React.CSSProperties;
 
   // Verse numbers inside the mushaf text are always Arabic-Indic.

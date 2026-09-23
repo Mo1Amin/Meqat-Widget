@@ -52,15 +52,16 @@ fn open_settings_window(app: &AppHandle) -> Result<(), String> {
 /// The optional desktop widgets, each its own transparent window.
 const EXTRA_WIDGETS: [&str; 2] = ["azkar", "ayah"];
 
-/// Opens an extra widget. It starts hidden and shows itself once its content
-/// has been measured, like the main widget, so it never flashes at the wrong size.
+/// Opens an extra widget and returns whether a new window was created. It
+/// starts hidden and shows itself once its content has been measured, like the
+/// main widget, so it never flashes at the wrong size.
 #[tauri::command]
-async fn open_widget(app: AppHandle, label: String) -> Result<(), String> {
+async fn open_widget(app: AppHandle, label: String) -> Result<bool, String> {
     if !EXTRA_WIDGETS.contains(&label.as_str()) {
         return Err(format!("unknown widget {label}"));
     }
     if app.get_webview_window(&label).is_some() {
-        return Ok(());
+        return Ok(false);
     }
     let mut builder = WebviewWindowBuilder::new(&app, &label, WebviewUrl::App("index.html".into()))
         .title("مِيقَات")
@@ -73,15 +74,20 @@ async fn open_widget(app: AppHandle, label: String) -> Result<(), String> {
         .maximizable(false)
         .visible(false)
         .focused(false);
-    // First time only: start just under the prayer widget instead of on top of
-    // it. A remembered position is restored over this by the window-state plugin.
-    if let Some(main) = app.get_webview_window(MAIN) {
-        if let (Ok(pos), Ok(size), Ok(scale)) = (main.outer_position(), main.outer_size(), main.scale_factor()) {
-            let offset = if label == "azkar" { 16.0 } else { 236.0 };
-            builder = builder.position(pos.x as f64 / scale, (pos.y + size.height as i32) as f64 / scale + offset);
-        }
+    // First time only: stack under the widgets already on screen instead of on
+    // top of them. A remembered position is restored over this by the
+    // window-state plugin.
+    let anchor = EXTRA_WIDGETS
+        .iter()
+        .filter(|l| **l != label)
+        .filter_map(|l| app.get_webview_window(l))
+        .chain(app.get_webview_window(MAIN))
+        .filter_map(|w| Some((w.outer_position().ok()?, w.outer_size().ok()?, w.scale_factor().ok()?)))
+        .max_by_key(|(pos, size, _)| pos.y + size.height as i32);
+    if let Some((pos, size, scale)) = anchor {
+        builder = builder.position(pos.x as f64 / scale, (pos.y + size.height as i32) as f64 / scale + 12.0);
     }
-    builder.build().map(|_| ()).map_err(|e| e.to_string())
+    builder.build().map(|_| true).map_err(|e| e.to_string())
 }
 
 /// Shows a widget without activating it. A plain `show()` takes the focus, so a

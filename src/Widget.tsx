@@ -11,7 +11,7 @@ import {
   type ScheduledPrayer,
 } from "./prayer";
 import { fontFamily, loadSettings, onSettingsChanged, saveSettings, type Settings } from "./settings";
-import { notify, openSettings, setWidgetWindow } from "./native";
+import { closeWidget, notify, openSettings, openWidget } from "./native";
 import { useDesktopWidget } from "./useDesktopWidget";
 import { azanSrcFor } from "./voices";
 import { BellIcon, BellOffIcon, GearIcon, StopIcon } from "./icons";
@@ -139,23 +139,35 @@ export default function Widget() {
 
   // ---------------------------------------------------------------- window
 
-  const { onMouseDown, onContextMenu } = useDesktopWidget(stageRef, {
+  const { onMouseDown, onContextMenu, shown } = useDesktopWidget(stageRef, {
     alwaysOnTop: settings.alwaysOnTop,
     lockPosition: settings.lockPosition,
     settingsTab: "look",
   });
 
   // The extra widgets are separate windows; the prayer widget owns their
-  // lifetime so they open with the app and follow the settings. They wait
-  // until this widget has its real size, because a first-time widget is
-  // placed just below it.
-  const settled = !!schedule || failed;
+  // lifetime so they open with the app and follow the settings. A first-time
+  // widget is placed just below this one, so they wait for its real size:
+  // cached timings arrive before the fonts do, so "data loaded" alone is too
+  // early — wait for the first show, then give the loaded-size resize a moment.
+  const [settled, setSettled] = useState(false);
+  const hasContent = !!schedule || failed;
   useEffect(() => {
-    if (settled) setWidgetWindow("azkar", settings.azkar.enabled);
-  }, [settings.azkar.enabled, settled]);
+    if (!shown || !hasContent || settled) return;
+    const id = window.setTimeout(() => setSettled(true), 400);
+    return () => clearTimeout(id);
+  }, [shown, hasContent, settled]);
+  // One after the other: opened together, neither saw the other and both
+  // landed in the same spot.
   useEffect(() => {
-    if (settled) setWidgetWindow("ayah", settings.ayah.enabled);
-  }, [settings.ayah.enabled, settled]);
+    if (!settled) return;
+    void (async () => {
+      for (const label of ["azkar", "ayah"] as const) {
+        if (settings[label].enabled) await openWidget(label);
+        else await closeWidget(label);
+      }
+    })();
+  }, [settings.azkar.enabled, settings.ayah.enabled, settled]);
 
   const toggleAzan = () => {
     const next = { ...settings, azanEnabled: !settings.azanEnabled };
