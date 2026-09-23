@@ -1,0 +1,382 @@
+/* The widget window is transparent and sized to .stage, so nothing outside
+   the stage may take up space. Every size below is in em so the whole widget
+   scales from one number (--scale) and the window follows. */
+
+html[data-view="widget"],
+html[data-view="widget"] body {
+  margin: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+html[data-view="widget"] * {
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: max-content;
+  padding: 0.9em;
+  font-size: calc(15px * var(--scale, 1));
+  color: #fff;
+  line-height: 1.35;
+  -webkit-font-smoothing: antialiased;
+}
+
+.card {
+  --text-2: rgba(255, 255, 255, 0.66);
+  --text-3: rgba(255, 255, 255, 0.42);
+  --line: rgba(255, 255, 255, 0.1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9em;
+  padding: 1.15em 1.35em 1.05em;
+  border-radius: 1.4em;
+  background: rgba(16, 17, 20, var(--tint, 0.5));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0.4em 1.4em rgba(0, 0, 0, 0.22);
+  cursor: grab;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.card:active {
+  cursor: grabbing;
+}
+
+.card.is-locked {
+  cursor: default;
+}
+
+.num {
+  font-family: "Almarai", sans-serif;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.num small {
+  font-size: 0.55em;
+  font-weight: 400;
+  margin-inline-start: 0.3em;
+  opacity: 0.75;
+}
+
+/* ------------------------------------------------------------ header */
+
+.head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2.5em;
+}
+
+.dates {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
+}
+
+.weekday {
+  font-size: 2.05em;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--accent);
+}
+
+.hijri {
+  font-size: 1.02em;
+  font-weight: 600;
+  font-family: inherit;
+}
+
+.greg {
+  font-size: 0.88em;
+  font-weight: 400;
+  font-family: inherit;
+  color: var(--text-2);
+}
+
+.clock-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.55em;
+}
+
+.clock {
+  display: flex;
+  align-items: baseline;
+  font-size: 3.1em;
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+
+.next {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45em;
+  padding: 0.3em 0.8em;
+  border-radius: 0.8em;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.next-name {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.next-after {
+  font-size: 0.85em;
+  color: var(--text-2);
+}
+
+.next-count {
+  font-size: 1.05em;
+  min-width: 4.6em;
+  text-align: left;
+}
+
+/* ------------------------------------------------------------ progress */
+
+.progress {
+  height: 0.18em;
+  border-radius: 1em;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.progress i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  opacity: 0.85;
+  transform-origin: right;
+  transition: transform 1s linear;
+}
+
+/* ------------------------------------------------------------ prayer row */
+
+.prayers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(4.6em, 1fr));
+  gap: 0.25em;
+}
+
+.prayers li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15em;
+  padding: 0.45em 0.3em;
+  border-radius: 0.8em;
+  transition: background 0.3s, opacity 0.3s;
+}
+
+.p-name {
+  font-size: 0.95em;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.p-time {
+  font-size: 1.05em;
+  white-space: nowrap;
+}
+
+.prayers li.is-passed {
+  opacity: 0.45;
+}
+
+.prayers li.is-next {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.prayers li.is-next .p-name {
+  color: var(--accent);
+}
+
+/* ------------------------------------------------------------ compact */
+
+.layout-compact {
+  padding: 0.8em 1.1em;
+}
+
+.compact {
+  display: flex;
+  align-items: center;
+  gap: 1.2em;
+}
+
+.compact .clock {
+  font-size: 2.4em;
+}
+
+.compact-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45em;
+}
+
+.layout-prayers {
+  padding: 0.7em 0.8em;
+}
+
+/* ------------------------------------------------------------ states */
+
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35em;
+  padding: 1em 3em;
+  text-align: center;
+}
+
+.state p {
+  margin: 0;
+  font-weight: 600;
+}
+
+.state span {
+  font-size: 0.85em;
+  color: var(--text-2);
+}
+
+.stale {
+  margin-top: -0.4em;
+  font-size: 0.72em;
+  color: var(--text-3);
+  text-align: center;
+}
+
+.calling {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.5em 0.6em 0.5em 0.9em;
+  padding-inline-start: 0.9em;
+  border-radius: 0.9em;
+  background: color-mix(in srgb, var(--accent) 20%, rgba(0, 0, 0, 0.2));
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  animation: calling-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.calling span {
+  flex: 1;
+}
+
+.calling b {
+  color: var(--accent);
+}
+
+.calling-dot {
+  flex: none !important;
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes calling-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.4em);
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* ------------------------------------------------------------ buttons */
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 1.9em;
+  height: 1.9em;
+  padding: 0;
+  border: 0;
+  border-radius: 0.6em;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.icon-btn svg {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+.text-btn {
+  margin-top: 0.5em;
+  padding: 0.35em 1em;
+  border: 1px solid var(--line);
+  border-radius: 0.7em;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font: inherit;
+  font-size: 0.85em;
+  cursor: pointer;
+}
+
+/* Quick controls stay out of the way until the pointer is on the widget. */
+/* In the full layout the top centre, between the clock and the dates, is
+   the one corner that never holds content. */
+.tools {
+  position: absolute;
+  top: 0.7em;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.3em;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.card:hover .tools {
+  opacity: 1;
+}
+
+/* The small layouts have no free corner, so the controls get a slim column
+   of their own at the leading edge instead of covering the countdown. */
+.layout-compact,
+.layout-prayers {
+  padding-left: 2.7em;
+}
+
+.layout-compact .tools,
+.layout-prayers .tools {
+  top: 50%;
+  left: 0.5em;
+  flex-direction: column;
+  transform: translateY(-50%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress i,
+  .calling,
+  .calling-dot {
+    transition: none;
+    animation: none;
+  }
+}

@@ -1,0 +1,384 @@
+html[data-view="settings"] {
+  --bg: #1b1c1f;
+  --surface: #242529;
+  --surface-2: #2d2e33;
+  --line: rgba(255, 255, 255, 0.08);
+  --text: #f2f2f3;
+  --text-2: #a3a4aa;
+  --text-3: #6f7076;
+  --accent: #d9dfc0;
+  --accent-ink: #1b1c1f;
+  color-scheme: dark;
+}
+
+html[data-view="settings"] body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Cairo", sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+html[data-view="settings"] * {
+  box-sizing: border-box;
+}
+
+.settings {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 22px 20px 16px;
+}
+
+.settings-head h1 {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 700;
+}
+
+.settings-head p {
+  margin: 2px 0 18px;
+  color: var(--text-2);
+  font-size: 0.9rem;
+}
+
+.section {
+  margin-bottom: 18px;
+}
+
+.section h2 {
+  margin: 0 4px 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-2);
+  letter-spacing: 0.02em;
+}
+
+.section-body {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 52px;
+  padding: 8px 14px;
+}
+
+.row + .row,
+.place + .row {
+  border-top: 1px solid var(--line);
+}
+
+.row-label {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.row-label span {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.row-label em {
+  font-style: normal;
+  font-weight: 400;
+  color: var(--text-2);
+  margin-inline-start: 8px;
+}
+
+.row-label small {
+  color: var(--text-3);
+  font-size: 0.78rem;
+}
+
+.row-control {
+  display: flex;
+  justify-content: flex-end;
+  flex: none;
+}
+
+/* ------------------------------------------------------------ controls */
+
+select,
+input[type="search"] {
+  font: inherit;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 10px;
+  min-width: 170px;
+  max-width: 230px;
+  outline: none;
+}
+
+select:focus-visible,
+input[type="search"]:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+select:disabled,
+input:disabled,
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+input[type="range"] {
+  width: 190px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.segmented {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+
+.segmented button {
+  font: inherit;
+  font-size: 0.88rem;
+  padding: 4px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+}
+
+.segmented button.is-on {
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 700;
+}
+
+.toggle {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.toggle i {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--text-2);
+  transition: transform 0.15s, background 0.15s;
+}
+
+.toggle.is-on {
+  background: var(--accent);
+  box-shadow: none;
+}
+
+.toggle.is-on i {
+  background: var(--accent-ink);
+  transform: translateX(-18px);
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.stepper button {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.stepper span {
+  min-width: 80px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.swatches {
+  display: flex;
+  gap: 8px;
+}
+
+.swatch {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+}
+
+.swatch.is-on {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--text);
+}
+
+.swatch.custom {
+  overflow: hidden;
+  background: conic-gradient(#f87171, #fbbf24, #34d399, #60a5fa, #c084fc, #f87171);
+}
+
+.swatch.custom input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.volume {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.volume input[type="range"] {
+  width: 120px;
+}
+
+.icon-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.icon-pill svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ------------------------------------------------------------ place */
+
+.place {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.place-current {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.place-current svg {
+  width: 20px;
+  height: 20px;
+  color: var(--accent);
+  flex: none;
+}
+
+.place-current div,
+.place-results button {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.place-current small,
+.place-results small {
+  color: var(--text-2);
+  font-size: 0.8rem;
+}
+
+.place input[type="search"] {
+  width: 100%;
+  max-width: none;
+}
+
+.place-note {
+  margin: 0;
+  color: var(--text-2);
+  font-size: 0.85rem;
+}
+
+.place-results {
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.place-results button {
+  width: 100%;
+  padding: 6px 10px;
+  text-align: right;
+  font: inherit;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.place-results button:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ------------------------------------------------------------ footer */
+
+.settings-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 4px 0;
+  color: var(--text-3);
+  font-size: 0.82rem;
+}
+
+.link-btn {
+  font: inherit;
+  color: var(--text-2);
+  background: none;
+  border: 0;
+  padding: 4px 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.link-btn:hover {
+  color: var(--text);
+}

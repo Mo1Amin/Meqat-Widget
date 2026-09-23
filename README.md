@@ -14,24 +14,27 @@ A beautifully designed, Glassmorphism-inspired Islamic prayer times widget for W
 
 ## ✨ Features
 
-* **Glassmorphism UI:** Modern, translucent, and sleek Apple-like aesthetic that blends with any desktop wallpaper.
-* **Offline-First Architecture:** Intelligently caches prayer times. If the internet disconnects, the widget seamlessly falls back to stored data.
-* **Always on Top:** Pin the widget to float above all other windows for quick viewing.
-* **Smart Audio System:** Plays specific Azan audio for Fajr and a standard Azan for other prayers. Includes a quick-mute toggle.
-* **Customization Hub:** Adjust widget scale, theme color, Arabic fonts (Cairo, Aref Ruqaa, Amiri), numeral styles (١٢٣ vs 123), and 12/24 hour formats via an intuitive Glass Modal setting screen.
-* **Taskbar Hidden:** Operates silently in the background via the System Tray without cluttering your main taskbar.
+* **Sized to its content:** The window is always exactly the size of the widget, at any scale from 70% to 160% — nothing is clipped, and no invisible margin blocks clicks on your desktop.
+* **Any city:** Search for your city in Arabic or English; prayer times are fetched by coordinates, with 11 calculation methods and Shafi'i/Hanafi Asr.
+* **Accurate Hijri date:** Computed locally (Umm al-Qura) with a ±2 day correction for your country's sighting.
+* **Three layouts:** Full (date, clock, countdown and all six times), compact (clock and countdown), or the prayer row alone.
+* **Live countdown and progress:** The next prayer is highlighted, passed prayers fade, and a bar shows how far through the current prayer time you are. Friday's Dhuhr shows as الجمعة.
+* **Azan and reminders:** Plays the azan once per prayer, with volume control and a preview button; optional Windows notifications, plus a reminder 5–30 minutes before each prayer.
+* **Offline-first:** A whole month is cached per location; the day rolls over at midnight without a restart, and the widget retries on its own when the connection returns.
+* **Personalise it:** Accent colour, four bundled Arabic fonts (work offline), Arabic or Latin numerals, 12/24-hour clock, optional seconds, background opacity.
+* **Behaves like a desktop widget:** Always-on-top, lock position, launch at login, a single instance, and it comes back on screen if a monitor is unplugged.
 
 ## 🚀 Tech Stack
 
 * **Frontend:** React, TypeScript, Vite
 * **Backend & System Integration:** Tauri, Rust
 * **Styling:** Vanilla CSS (CSS Variables, Flexbox, Keyframe Animations)
-* **API:** Aladhan API (For dynamic prayer time fetching based on geolocation/city)
+* **APIs:** [Aladhan](https://aladhan.com/prayer-times-api) for prayer times, [Open-Meteo Geocoding](https://open-meteo.com/en/docs/geocoding-api) for city search
 
 ## 📥 Installation & Usage
 
 1. Go to the [Releases](https://github.com/Mo1Amin/Meqat-Widget/releases) page.
-2. Download the latest `miqat_1.2.0_x64-setup.exe` file.
+2. Download the latest `miqat_1.3.0_x64-setup.exe` file.
 3. Install and run the application.
 4. **Controls:** * **Left-Click** on the tray icon to show the widget.
    * **Right-Click** on the widget to open the Settings Panel.
@@ -50,3 +53,4 @@ npm run tauri dev
 
 # Build for production
 npm run tauri build
+```
